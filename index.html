@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="images/logo1.png" type="image/x-icon"/>
+  <title>End of Discuss</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      background-color: black;
+      font-family: 'Courier New', Courier, monospace;
+      overflow: hidden;
+      cursor: none; /* Hide default cursor */
+    }
+
+    .image-container {
+      position: relative;
+      height: 75%;
+      width: 75%;
+      margin: auto;
+      top: 12.5%;
+      animation: fadeInFromBlack 3s ease-in-out forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeInFromBlack {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .background-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background-image: url(images/eod.png);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: 1;
+    }
+
+    .bubble {
+      position: absolute;
+      background: rgba(0, 0, 0, 0.75);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 20px;
+      font-size: 1em;
+      white-space: nowrap;
+      pointer-events: none;
+      transform: scale(0.8) translateY(10px);
+      opacity: 0;
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease-out;
+      z-index: 10;
+    }
+
+    .image-container:hover .bubble.show {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+
+    .coming-soon {
+      position: absolute;
+      bottom: 30px;
+      width: 100%;
+      text-align: center;
+      font-size: 2.5em;
+      color: red;
+      letter-spacing: 2px;
+      z-index: 20;
+      font-weight: bold;
+      text-shadow:
+        0 0 5px red,
+        0 0 10px red,
+        0 0 20px darkred,
+        0 0 40px red;
+      animation:
+        bleeding 2s infinite ease-in-out alternate,
+        glitch 0.5s ease-in-out 10s infinite,
+        pulse 3s ease-in-out infinite;
+    }
+
+    .coming-soon span::after {
+      content: '_';
+      animation: blink-cursor 1s steps(2) infinite;
+      display: inline-block;
+      margin-left: 5px;
+    }
+
+    @keyframes glitch {
+      0% { text-shadow: 2px 0 red, -2px 0 cyan; }
+      20% { text-shadow: -2px 0 red, 2px 0 cyan; }
+      40% { text-shadow: 2px 2px red, -2px -2px cyan; }
+      60% { text-shadow: -1px -1px red, 1px 1px cyan; }
+      80% { text-shadow: 0 0 red, 0 0 cyan; }
+      100% { text-shadow: 2px 0 red, -2px 0 cyan; }
+    }
+
+    @keyframes bleeding {
+      0% {
+        text-shadow:
+          0 0 5px red,
+          0 0 10px red,
+          0 0 20px darkred,
+          0 0 40px red;
+        transform: scale(1);
+      }
+      100% {
+        text-shadow:
+          0 0 10px darkred,
+          0 0 20px red,
+          0 0 40px crimson,
+          0 0 60px darkred;
+        transform: scale(1.03);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+
+    @keyframes blink-cursor {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    /* Play Button */
+    .play-button {
+      position: absolute;
+      bottom: 120px; /* higher above Coming Soon */
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(255, 0, 0, 0.8);
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      z-index: 30;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 10px red;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .play-button::before {
+      content: '';
+      display: block;
+      width: 0;
+      height: 0;
+      border-left: 12px solid white;
+      border-top: 8px solid transparent;
+      border-bottom: 8px solid transparent;
+    }
+
+    .play-button:hover {
+      transform: translateX(-50%) scale(1.2);
+      box-shadow: 0 0 15px red, 0 0 30px crimson;
+    }
+
+    /* Custom Red Transparent Cursor */
+    .cursor-dot {
+      position: fixed;
+      width: 30px;
+      height: 30px;
+      border: 2px solid rgba(255, 0, 0, 0.7);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.1s ease;
+      mix-blend-mode: difference;
+    }
+  </style>
+</head>
+<body>
+
+  <audio id="bg-audio" loop>
+    <source src="audio/end.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <div class="image-container" id="container">
+    <div class="background-image"></div>
+    <div class="bubble" id="bubble">Directed and Produced by Phantasia XI</div>
+  </div>
+
+  <button class="play-button" id="playBtn" title="Play Audio"></button>
+
+  <div class="coming-soon"><span>Coming Soon...</span></div>
+
+  <div class="cursor-dot" id="cursorDot"></div>
+
+  <script>
+    const container = document.getElementById("container");
+    const bubble = document.getElementById("bubble");
+    const audio = document.getElementById("bg-audio");
+    const playBtn = document.getElementById("playBtn");
+    const cursorDot = document.getElementById("cursorDot");
+
+    container.addEventListener("mousemove", (e) => {
+      const rect = container.getBoundingClientRect();
+      bubble.style.left = `${e.clientX - rect.left + 20}px`;
+      bubble.style.top = `${e.clientY - rect.top - 40}px`;
+      bubble.classList.add("show");
+    });
+
+    container.addEventListener("mouseleave", () => {
+      bubble.classList.remove("show");
+    });
+
+    // Play audio on button click
+    playBtn.addEventListener("click", () => {
+      audio.play();
+    });
+
+    // Custom cursor movement
+    document.addEventListener("mousemove", (e) => {
+      cursorDot.style.left = `${e.clientX - 15}px`;
+      cursorDot.style.top = `${e.clientY - 15}px`;
+    });
+  </script>
+</body>
+</html>
